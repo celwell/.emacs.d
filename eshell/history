@@ -1,0 +1,127 @@
+ls
+ls -la
+./configure
+make
+(+ 2 2)
+rgrep
+rgrep "rl_insert_comment" *.[ch]
+cd ..
+ls -la
+./configure
+sudo /configure
+sudo ./configure
+ls
+ls -la
+./configure
+sudo ./configure
+cd c:/wamp
+cd www
+ls
+cd stest
+ls
+ls -la
+coffee -o . -cwb src
+coffee -o . -cwb src/
+coffee -cwb src -o .
+coffee
+ls
+sencha
+coffee -v
+npm
+git
+git status
+sudo
+ls
+coffee --help
+ls
+ls -la
+git -v
+git status
+head README.md
+coffee -v
+coffee -v
+path
+ls
+ls -la
+cd c
+cd /
+ls
+ls -la
+cd wamp/www/md
+cd wamp/www/mdstand/
+ls
+ls -la
+ls
+ls -la
+git -v
+coffee -v
+coffee -v
+git -v
+ls
+ls -ls
+git -v
+coffee -v
+cd /
+cd wamp/www/mdstand/
+ls -la
+lein -v
+git -v
+git status
+ls
+cd ..
+cd ..
+cd ..
+cd sites
+ls
+git clone https://github.com/magomimmo/modern-cljs.git
+cd modern-cljs/
+las
+la
+la
+ls
+cd src
+ls
+cd cljs
+ls
+cd modern_cljs/
+ls
+cd ../../../
+ls
+cd cljs-tutorial/
+ls
+cd src
+ls
+cd cljs/
+ls
+cd lc
+cd cljs_tutorial/
+s
+ls
+open core.cljs 
+coffee
+coffee -v
+compass -v
+lein -v
+cd ../../
+ls
+ls -la
+ls
+time
+mkdir proj
+ls
+ls *roj
+cd proj
+ls
+cd ../
+rmdir proj
+ls *roj
+ls
+mkdir proj
+ls
+cd proj
+ls
+lein new throne-parse
+lein help new
+ls
+cd throne-parse/
+ls
