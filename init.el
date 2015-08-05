@@ -9,7 +9,6 @@
 
 (defvar my-packages '(better-defaults
                       clojure-mode
-                      clojure-test-mode
                       cider
                       ;; coffee-mode
                       ))
