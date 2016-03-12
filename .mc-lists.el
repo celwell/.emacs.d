@@ -3,6 +3,8 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        indent-buffer-and-indent
+        paredit-forward-kill-word
         paredit-join-sexps
         paredit-kill
         smart-line-beginning

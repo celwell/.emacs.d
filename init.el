@@ -1,4 +1,6 @@
-(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/lisp")
+
+(setq exec-path (add-to-list 'exec-path "/Users/celwell/bin"))
 
 (require 'package)
 (add-to-list 'package-archives
@@ -15,6 +17,8 @@
 (dolist (p my-packages)
   (when (not (package-installed-p p))
     (package-install p)))
+
+(require 'clojure-mode)
 
 (add-to-list 'load-path "~/.emacs.d/expand-region/")
 (require 'expand-region)
@@ -56,6 +60,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(cider-cljs-repl
+   "(do (require 'weasel.repl.websocket) (cemerick.piggieback/cljs-repl (weasel.repl.websocket/repl-env :ip \"127.0.0.1\" :port 9001)))")
  '(custom-enabled-themes (quote (tango-dark)))
  '(inhibit-startup-screen t)
  '(tool-bar-mode nil))
@@ -65,7 +71,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 90 :width normal))))
+ '(default ((t (:family "Monaco" :foundry "outline" :slant normal :weight normal :height 125 :width normal))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#A0FA67"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "white"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow"))))
@@ -134,6 +140,18 @@ the current position of point, then move it to the beginning of the line."
 (global-set-key "\M-n" "\C-u1\C-v")
 (global-set-key "\M-p" "\C-u1\M-v")
 
+;; Company Mode
+(global-company-mode)
+
+(require 'js-comint)
+(setq inferior-js-program-command "node")
+(add-hook 'js2-mode-hook '(lambda () 
+                            (local-set-key "\C-x\C-e" 'js-send-last-sexp)
+                            (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
+                            (local-set-key "\C-cb" 'js-send-buffer)
+                            (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
+                            (local-set-key "\C-cl" 'js-load-file-and-go)
+                            ))
 
 ;; Multiple Cursors Mode
 (require 'multiple-cursors)
@@ -142,6 +160,19 @@ the current position of point, then move it to the beginning of the line."
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
+(defun indent-buffer-and-indent ()
+  "Indent the currently visited buffer"
+  (interactive)
+  (indent-region (point-min) (point-max))
+  (indent-according-to-mode))
+
+(global-set-key (kbd "C-j") 'newline-and-indent)
+
+(eval-after-load 'clojure-mode
+  '(define-key clojure-mode-map [(tab)] 'indent-buffer-and-indent))
+
+(eval-after-load 'clojurescript-mode
+  '(define-key clojurescript-mode-map [(tab)] 'indent-buffer-and-indent))
 
 (defun toggle-window-split ()
   (interactive)
@@ -206,6 +237,23 @@ e.g. Sunday, September 17, 2000."
 (global-rainbow-delimiters-mode)
 
 
+(autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
+(add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+;; IRC
+(setq circe-active-users-timeout 180)
+(setq circe-reduce-lurker-spam t)
+
+
+
+
+;; (defadvice ido-find-file (after find-file-sudo activate)
+;;   "Find file as root if necessary."
+;;   (unless (and buffer-file-name
+;;                (file-writable-p buffer-file-name))
+;;     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+
 ;; MS Windows only stuff
 (when (string-equal system-type "windows-nt")
   (progn
@@ -215,10 +263,3 @@ e.g. Sunday, September 17, 2000."
     (setq text-mode-hook '(lambda()
                             (flyspell-mode t)
                             ))))
-
-
-;; for Cygwin shell
-;; (when (string-equal system-type "windows-nt")
-;;   (progn
-;;     (setenv "PATH" (concat  "c:\\cygwin\\bin;"  (getenv "PATH")))
-;;     (setq exec-path (append exec-path '("c:\\cygwin\\bin")))))
