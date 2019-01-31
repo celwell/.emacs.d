@@ -46,7 +46,10 @@
 (sml-modeline-mode 1)
 
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
+(setq-default tab-width 2)
+
+(setq js-indent-level 2)
+(setq css-indent-offset 2)
 
 ;; coffee-mode
 (require 'coffee-mode)
@@ -62,8 +65,15 @@
  ;; If there is more than one, they won't work right.
  '(cider-cljs-repl
    "(do (require 'weasel.repl.websocket) (cemerick.piggieback/cljs-repl (weasel.repl.websocket/repl-env :ip \"127.0.0.1\" :port 9001)))")
+ '(cider-lein-parameters "with-profile +local repl")
  '(custom-enabled-themes (quote (tango-dark)))
+ '(grep-find-ignored-directories
+   (quote
+    ("SCCS" "RCS" "CVS" "MCVS" ".src" ".svn" ".git" ".hg" ".bzr" "_MTN" "_darcs" "{arch}" "dist" "development")))
  '(inhibit-startup-screen t)
+ '(package-selected-packages
+   (quote
+    (slime-js fireplace rjsx-mode solidity-mode zoom-window zone-nyan web-mode syslog-mode stripe-buffer sml-modeline rich-minority rainbow-delimiters paredit multiple-cursors magit key-chord js-comint how-many-lines-in-project exec-path-from-shell company circe cider better-defaults)))
  '(tool-bar-mode nil))
 
 (custom-set-faces
@@ -72,6 +82,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Monaco" :foundry "outline" :slant normal :weight normal :height 125 :width normal))))
+ '(fringe ((t (:background "#2E3436"))))
+ '(js2-function-param ((t (:foreground "white"))))
+ '(mode-line ((t (:background "#212526" :foreground "controlHighlightColor" :box (:line-width -1 :color "#212526")))))
+ '(mode-line-inactive ((t (:background "#212526" :foreground "#777" :box (:line-width -1 :color "#212526")))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#A0FA67"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "white"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "yellow"))))
@@ -80,21 +94,26 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "cyan"))))
  '(rainbow-delimiters-depth-7-face ((t (:foreground "lawn green"))))
  '(rainbow-delimiters-depth-8-face ((t (:foreground "firebrick1"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "SeaGreen1")))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "SeaGreen1"))))
+ '(vertical-border ((t (:foreground "#212526")))))
 
 (global-set-key (kbd "M-<up>") 'windmove-up)
 (global-set-key (kbd "M-<down>") 'windmove-down)
 (global-set-key (kbd "M-<right>") 'windmove-right)
 (global-set-key (kbd "M-<left>") 'windmove-left)
 
-(global-set-key (kbd "C-x 8") 'other-frame)
-
 (defun frame-bck()
+  (interactive)
+  (other-frame -1))
+(global-set-key (kbd "C-x 8") 'other-frame)
+(global-set-key (kbd "C-x *") 'frame-bck)
+
+(defun window-bck()
   (interactive)
   (other-window -1))
 (define-key (current-global-map) (kbd "M-o") 'other-window)
-(define-key (current-global-map) (kbd "M-O") 'frame-bck)
-(define-key (current-global-map) (kbd "C-x O") 'frame-bck)
+(define-key (current-global-map) (kbd "M-O") 'window-bck)
+(define-key (current-global-map) (kbd "C-x O") 'window-bck)
 
 (global-set-key (kbd "C-,") 'hippie-expand)
 
@@ -127,7 +146,8 @@ the current position of point, then move it to the beginning of the line."
                          ;; indentation
                          ;; space-after-tab
                          face)
-      whitespace-line-column 80)
+      whitespace-line-column 180 ;; originally 80, but got annoyed
+      )
 (put 'downcase-region 'disabled nil)
 (global-whitespace-mode t)
 (setq whitespace-global-modes '(clojure-mode
@@ -143,6 +163,9 @@ the current position of point, then move it to the beginning of the line."
 ;; Company Mode
 (global-company-mode)
 
+;; (setq js2-strict-missing-semi-warning nil)
+(setq js2-mode-show-strict-warnings nil)
+
 (require 'js-comint)
 (setq inferior-js-program-command "node")
 (add-hook 'js2-mode-hook '(lambda () 
@@ -153,12 +176,15 @@ the current position of point, then move it to the beginning of the line."
                             (local-set-key "\C-cl" 'js-load-file-and-go)
                             ))
 
+;; (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+(add-to-list 'auto-mode-alist '(".*\\.js\\'" . rjsx-mode))
+
 ;; Multiple Cursors Mode
-(require 'multiple-cursors)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+;; (require 'multiple-cursors)
+;; (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+;; (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;; (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;; (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 (defun indent-buffer-and-indent ()
   "Indent the currently visited buffer"
@@ -173,6 +199,10 @@ the current position of point, then move it to the beginning of the line."
 
 (eval-after-load 'clojurescript-mode
   '(define-key clojurescript-mode-map [(tab)] 'indent-buffer-and-indent))
+
+;; start paredit with clojure(script) modes
+(add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'clojurescript-mode-hook 'paredit-mode)
 
 (defun toggle-window-split ()
   (interactive)
@@ -233,8 +263,11 @@ e.g. Sunday, September 17, 2000."
 
 (key-chord-define-global "l;" 'newline-and-indent)
 
-(require 'rainbow-delimiters)
-(global-rainbow-delimiters-mode)
+;; Magit
+(global-set-key (kbd "C-x g") 'magit-status)
+
+;; (require 'rainbow-delimiters)
+;; (global-rainbow-delimiters-mode)
 
 
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
@@ -245,21 +278,24 @@ e.g. Sunday, September 17, 2000."
 (setq circe-reduce-lurker-spam t)
 
 
+;; Term
+(add-to-list 'load-path "~/.emacs.d/sane-term/")
 
+;; Enable sane term
+(require 'sane-term)
+(global-set-key (kbd "C-x t") 'sane-term)
+(global-set-key (kbd "C-x T") 'sane-term-create)
 
-;; (defadvice ido-find-file (after find-file-sudo activate)
-;;   "Find file as root if necessary."
-;;   (unless (and buffer-file-name
-;;                (file-writable-p buffer-file-name))
-;;     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+;; Optional convenience binding. This allows C-y to paste even when in term-char-mode (see below). 
+(add-hook 'term-mode-hook
+          (lambda()
+            (define-key term-raw-map
+              (kbd "C-y")
+              (lambda ()
+                (interactive)
+                (term-line-mode)
+                (yank)
+                (term-char-mode)))))
 
-
-;; MS Windows only stuff
-(when (string-equal system-type "windows-nt")
-  (progn
-    (setenv "PATH" (concat "c:\\Program Files\\Git\\bin;" (getenv "PATH")))
-    (setq exec-path (add-to-list 'exec-path "c:\\Program Files\\Git\\bin"))
-    (setq-default ispell-program-name "C:\\Program Files\\Aspell\\bin\\aspell.exe")
-    (setq text-mode-hook '(lambda()
-                            (flyspell-mode t)
-                            ))))
+;; https://www.reddit.com/r/emacs/comments/5lybts/prevent_automatically_save_to_kill_ring_when_mark/dc0ut9e/
+(setq x-select-enable-primary nil)
