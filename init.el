@@ -63,9 +63,13 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(cider-cljs-repl
-   "(do (require 'weasel.repl.websocket) (cemerick.piggieback/cljs-repl (weasel.repl.websocket/repl-env :ip \"127.0.0.1\" :port 9001)))")
- '(cider-lein-parameters "with-profile +local repl")
+
+ ;; old
+ ;; '(cider-cljs-repl
+ ;;   "(do (require 'weasel.repl.websocket) (cemerick.piggieback/cljs-repl (weasel.repl.websocket/repl-env :ip \"127.0.0.1\" :port 9001)))")
+ 
+ ;; '(cider-lein-parameters "with-profile +local repl")
+
  '(custom-enabled-themes (quote (tango-dark)))
  '(grep-find-ignored-directories
    (quote
@@ -203,6 +207,12 @@ the current position of point, then move it to the beginning of the line."
 ;; start paredit with clojure(script) modes
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojurescript-mode-hook 'paredit-mode)
+
+(setq cider-save-file-on-load t) ; don't ask to save file (just save it!) when loading via C-c C-k
+(setq cider-cljs-lein-repl
+	"(do (require 'figwheel-sidecar.repl-api)
+         (figwheel-sidecar.repl-api/start-figwheel!)
+         (figwheel-sidecar.repl-api/cljs-repl))")
 
 (defun toggle-window-split ()
   (interactive)
