@@ -20,6 +20,8 @@
 
 (require 'clojure-mode)
 
+(require 'transpose-frame)
+
 (add-to-list 'load-path "~/.emacs.d/expand-region/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -63,13 +65,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-
- ;; old
- ;; '(cider-cljs-repl
- ;;   "(do (require 'weasel.repl.websocket) (cemerick.piggieback/cljs-repl (weasel.repl.websocket/repl-env :ip \"127.0.0.1\" :port 9001)))")
- 
- ;; '(cider-lein-parameters "with-profile +local repl")
-
  '(custom-enabled-themes (quote (tango-dark)))
  '(grep-find-ignored-directories
    (quote
@@ -77,8 +72,9 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (slime-js fireplace rjsx-mode solidity-mode zoom-window zone-nyan web-mode syslog-mode stripe-buffer sml-modeline rich-minority rainbow-delimiters paredit multiple-cursors magit key-chord js-comint how-many-lines-in-project exec-path-from-shell company circe cider better-defaults)))
- '(tool-bar-mode nil))
+    (ace-window avy idle-highlight-mode clj-refactor js2-mode slime-js fireplace rjsx-mode solidity-mode zoom-window zone-nyan web-mode syslog-mode stripe-buffer sml-modeline rich-minority rainbow-delimiters paredit multiple-cursors magit key-chord js-comint how-many-lines-in-project exec-path-from-shell company circe cider better-defaults)))
+ '(tool-bar-mode nil)
+ '(web-mode-markup-indent-offset 2))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -88,7 +84,7 @@
  '(default ((t (:family "Monaco" :foundry "outline" :slant normal :weight normal :height 125 :width normal))))
  '(fringe ((t (:background "#2E3436"))))
  '(js2-function-param ((t (:foreground "white"))))
- '(mode-line ((t (:background "#212526" :foreground "controlHighlightColor" :box (:line-width -1 :color "#212526")))))
+ '(mode-line ((t (:background "#212526" :foreground "#eee" :box (:line-width -1 :color "#212526")))))
  '(mode-line-inactive ((t (:background "#212526" :foreground "#777" :box (:line-width -1 :color "#212526")))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "#A0FA67"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "white"))))
@@ -160,6 +156,9 @@ the current position of point, then move it to the beginning of the line."
                                 ;; php-mode
                                 ))
 
+(global-linum-mode t)
+(set-face-foreground 'linum "#555")
+
 ;; scroll up and down without moving point
 (global-set-key "\M-n" "\C-u1\C-v")
 (global-set-key "\M-p" "\C-u1\M-v")
@@ -208,11 +207,22 @@ the current position of point, then move it to the beginning of the line."
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojurescript-mode-hook 'paredit-mode)
 
+(require 'clj-refactor)
+
+(defun clj-refactor-clojure-mode-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding overwrites cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c"))
+
+(add-hook 'clojure-mode-hook #'clj-refactor-clojure-mode-hook)
+
 (setq cider-save-file-on-load t) ; don't ask to save file (just save it!) when loading via C-c C-k
-(setq cider-cljs-lein-repl
-	"(do (require 'figwheel-sidecar.repl-api)
-         (figwheel-sidecar.repl-api/start-figwheel!)
-         (figwheel-sidecar.repl-api/cljs-repl))")
+(setq cider-default-cljs-repl 'figwheel)
+;; (setq cider-cljs-lein-repl
+;; 	"(do (require 'figwheel-sidecar.repl-api)
+;;        (figwheel-sidecar.repl-api/start-figwheel!)
+;;        (figwheel-sidecar.repl-api/cljs-repl))")
 
 (defun toggle-window-split ()
   (interactive)
@@ -258,10 +268,14 @@ e.g. Sunday, September 17, 2000."
   (insert (format-time-string "%A, %B %e, %Y")))
 
 
+(setq avy-all-windows 'all-frames)
+
 (require 'key-chord)
 (key-chord-mode 1)
-(key-chord-define-global "jk" 'backward-char)
-(key-chord-define-global "kl" 'forward-char)
+;; (key-chord-define-global "jk" 'backward-char)
+;; (key-chord-define-global "kl" 'forward-char)
+(key-chord-define-global "jk" 'avy-goto-word-or-subword-1)
+(key-chord-define-global "kl" 'ace-window)
 
 (key-chord-define-global "sd" 'delete-backward-char)
 (key-chord-define-global "df" 'delete-char)
@@ -272,6 +286,12 @@ e.g. Sunday, September 17, 2000."
 (key-chord-define-global "hu" 'save-buffer)
 
 (key-chord-define-global "l;" 'newline-and-indent)
+
+(key-chord-define-global "xc" 'cider-connect)
+(key-chord-define-global "zc" 'cider-connect-cljs)
+
+
+
 
 ;; Magit
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -288,14 +308,6 @@ e.g. Sunday, September 17, 2000."
 (setq circe-reduce-lurker-spam t)
 
 
-;; Term
-(add-to-list 'load-path "~/.emacs.d/sane-term/")
-
-;; Enable sane term
-(require 'sane-term)
-(global-set-key (kbd "C-x t") 'sane-term)
-(global-set-key (kbd "C-x T") 'sane-term-create)
-
 ;; Optional convenience binding. This allows C-y to paste even when in term-char-mode (see below). 
 (add-hook 'term-mode-hook
           (lambda()
@@ -309,3 +321,6 @@ e.g. Sunday, September 17, 2000."
 
 ;; https://www.reddit.com/r/emacs/comments/5lybts/prevent_automatically_save_to_kill_ring_when_mark/dc0ut9e/
 (setq x-select-enable-primary nil)
+
+;; no auto backups
+(setq create-lockfiles nil)
