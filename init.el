@@ -269,6 +269,7 @@ e.g. Sunday, September 17, 2000."
 
 
 (setq avy-all-windows 'all-frames)
+(setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
 
 (require 'key-chord)
 (key-chord-mode 1)
