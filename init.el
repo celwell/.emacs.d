@@ -273,10 +273,8 @@ e.g. Sunday, September 17, 2000."
 
 (require 'key-chord)
 (key-chord-mode 1)
-;; (key-chord-define-global "jk" 'backward-char)
-;; (key-chord-define-global "kl" 'forward-char)
-(key-chord-define-global "jk" 'avy-goto-word-or-subword-1)
-(key-chord-define-global "kl" 'ace-window)
+(key-chord-define-global "jk" 'backward-char)
+(key-chord-define-global "kl" 'forward-char)
 
 (key-chord-define-global "sd" 'delete-backward-char)
 (key-chord-define-global "df" 'delete-char)
@@ -290,6 +288,23 @@ e.g. Sunday, September 17, 2000."
 
 (key-chord-define-global "xc" 'cider-connect)
 (key-chord-define-global "zc" 'cider-connect-cljs)
+
+(key-chord-define-global "hj" 'avy-goto-word-or-subword-1)
+(key-chord-define-global "fg" 'ace-window)
+
+(global-set-key (kbd "<f5>") 'set-selective-display-dlw)
+
+(defun set-selective-display-dlw (&optional level)
+"Fold text indented same of more than the cursor.
+If level is set, set the indent level to LEVEL.
+If 'selective-display' is already set to LEVEL, clicking
+F5 again will unset 'selective-display' by setting it to 0."
+  (interactive "P")
+  (if (eq selective-display (1+ (current-column)))
+      (set-selective-display 0)
+    (set-selective-display (or level (1+ (current-column))))))
+
+(key-chord-define-global "qp" 'set-selective-display-dlw)
 
 
 
@@ -325,3 +340,4 @@ e.g. Sunday, September 17, 2000."
 
 ;; no auto backups
 (setq create-lockfiles nil)
+(put 'narrow-to-region 'disabled nil)
