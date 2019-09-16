@@ -22,6 +22,8 @@
 
 (require 'transpose-frame)
 
+(require 'rainbow-delimiters)
+
 (add-to-list 'load-path "~/.emacs.d/expand-region/")
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
@@ -72,7 +74,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (ace-window avy idle-highlight-mode clj-refactor js2-mode slime-js fireplace rjsx-mode solidity-mode zoom-window zone-nyan web-mode syslog-mode stripe-buffer sml-modeline rich-minority rainbow-delimiters paredit multiple-cursors magit key-chord js-comint how-many-lines-in-project exec-path-from-shell company circe cider better-defaults)))
+    (aggressive-indent ace-window avy idle-highlight-mode clj-refactor js2-mode slime-js fireplace rjsx-mode solidity-mode zoom-window zone-nyan web-mode syslog-mode stripe-buffer sml-modeline rich-minority rainbow-delimiters paredit multiple-cursors magit key-chord js-comint how-many-lines-in-project exec-path-from-shell company circe cider better-defaults)))
  '(tool-bar-mode nil)
  '(web-mode-markup-indent-offset 2))
 
@@ -203,9 +205,16 @@ the current position of point, then move it to the beginning of the line."
 (eval-after-load 'clojurescript-mode
   '(define-key clojurescript-mode-map [(tab)] 'indent-buffer-and-indent))
 
+
 ;; start paredit with clojure(script) modes
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojurescript-mode-hook 'paredit-mode)
+(add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'clojurescript-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+(add-hook 'clojurescript-mode-hook #'aggressive-indent-mode)
+
+
 
 (require 'clj-refactor)
 
@@ -273,11 +282,6 @@ e.g. Sunday, September 17, 2000."
 
 (require 'key-chord)
 (key-chord-mode 1)
-(key-chord-define-global "jk" 'backward-char)
-(key-chord-define-global "kl" 'forward-char)
-
-(key-chord-define-global "sd" 'delete-backward-char)
-(key-chord-define-global "df" 'delete-char)
 
 (key-chord-define-global "nj" 'next-line)
 (key-chord-define-global "ji" 'previous-line)
@@ -289,8 +293,15 @@ e.g. Sunday, September 17, 2000."
 (key-chord-define-global "xc" 'cider-connect)
 (key-chord-define-global "zc" 'cider-connect-cljs)
 
-(key-chord-define-global "hj" 'avy-goto-word-or-subword-1)
-(key-chord-define-global "fg" 'ace-window)
+(key-chord-define-global "sd" 'delete-backward-char)
+(key-chord-define-global "df" 'delete-char)
+
+;; (key-chord-define-global "jk" 'backward-char)
+;; (key-chord-define-global "kl" 'forward-char)
+(key-chord-define-global "jk" 'avy-goto-word-or-subword-1)
+(key-chord-define-global "kl" 'ace-window)
+
+(key-chord-define-global "hj" 'join-line)
 
 (global-set-key (kbd "<f5>") 'set-selective-display-dlw)
 
@@ -307,13 +318,8 @@ F5 again will unset 'selective-display' by setting it to 0."
 (key-chord-define-global "qp" 'set-selective-display-dlw)
 
 
-
-
 ;; Magit
 (global-set-key (kbd "C-x g") 'magit-status)
-
-;; (require 'rainbow-delimiters)
-;; (global-rainbow-delimiters-mode)
 
 
 (autoload 'ansi-color-for-comint-mode-on "ansi-color" nil t)
