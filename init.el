@@ -28,6 +28,10 @@
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
 
+(add-to-list 'load-path "~/.emacs.d/re-jump/")
+(require 're-jump)
+(key-chord-define-global "90" 're-frame-jump-to-reg)
+
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
